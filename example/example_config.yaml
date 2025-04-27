@@ -1,5 +1,5 @@
  files: 
-   - output_path: "/etc/fstab"
+   - output_path: "./test_output/fstab"
      contents: 
        InFileContents: "
         /dev/sda1 / btrfs defaults,noatime 0 1 

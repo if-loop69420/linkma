@@ -1,3 +1,5 @@
+use std::default;
+
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -11,8 +13,12 @@ pub struct CliArgs {
 #[derive(Subcommand)]
 pub enum Commands {
     Create {
+        // Path to the config file containing the other config files
         #[arg(short, long)]
         config_path: String,
+        // Directory to put the newly generated config(folder that will be RO) into
+        #[arg(short, long)]
+        output_directory: Option<String>,
     },
     Rollback {
         #[arg(short, long)]

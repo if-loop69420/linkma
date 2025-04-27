@@ -10,7 +10,16 @@ pub struct CliArgs {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    Create { config_path: String },
-    Rollback { rollback_to: String },
-    Clear { leave_generations: usize },
+    Create {
+        #[arg(short, long)]
+        config_path: String,
+    },
+    Rollback {
+        #[arg(short, long)]
+        rollback_to: String,
+    },
+    Clear {
+        #[arg(short, long)]
+        leave_generations: usize,
+    },
 }

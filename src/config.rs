@@ -3,13 +3,13 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct CreateConfig {
-    files: Vec<ConfigFile>,
+    pub files: Vec<ConfigFile>,
 }
 
 #[derive(Deserialize)]
 pub struct ConfigFile {
-    output_path: String,
-    contents: Contents,
+    pub output_path: String,
+    pub contents: Contents,
 }
 
 #[derive(Deserialize)]

@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand};
 #[command(propagate_version = true)]
 pub struct CliArgs {
     #[command(subcommand)]
-    create_conf: Commands,
+    pub command: Commands,
 }
 
 #[derive(Subcommand)]

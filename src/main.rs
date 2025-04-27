@@ -1,3 +1,10 @@
+mod cli;
+mod config;
+
+use clap::Parser;
+
+use crate::cli::CliArgs;
+
 fn main() {
-    println!("Hello, world!");
+    let _cli_args = CliArgs::parse();
 }

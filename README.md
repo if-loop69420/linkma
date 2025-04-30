@@ -13,5 +13,8 @@ Linkma config files, admin!
 - [X] Once all files have been written add an init script to the folder, that links all the files (with their identifiers) to the correct paths
 - [X] Set the folder to Read-only
 - [X] Link the folder to something like /linkma/current_system
-- [ ] BIG: Figure out how to do rollbacks (e.g. if to do logging what folders are created and what files are moved to back etc, or just changing the links)
-- [ ] BIG: Add things for "generation" management (e.g. listing generations, deleting generations, auto deleting generations (keeping only the latest n generations))
+- [X] Linking of generations
+- [ ] Do generations management (clear all but the latest "n")
+- [ ] Deletion of a specific generation
+- [ ] Switch to a specific generation
+  

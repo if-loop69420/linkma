@@ -15,9 +15,9 @@ pub enum Commands {
         #[arg(short, long)]
         config_path: String,
     },
-    Rollback {
+    Switch {
         #[arg(short, long)]
-        rollback_to: String,
+        switch_to: String,
     },
     Clear {
         #[arg(short, long)]

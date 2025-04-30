@@ -64,7 +64,7 @@ pub fn create_dir(config: CreateConfig) -> Result<(), String> {
 
 fn get_file_contents(file: ConfigFile) -> Result<String, String> {
     match file.contents {
-        crate::config::Contents::internal(x) => Ok(x),
+        crate::config::Contents::internal(x) => Ok(String::from(x.trim())),
         crate::config::Contents::external(x) => {
             let mut file = match File::open(x) {
                 Ok(x) => x,

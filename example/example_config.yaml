@@ -2,7 +2,7 @@
   "/home/toni/workspace/linkma/test_output/.bashrc":
     contents:
       internal: "
-        echo \"hi\"        "
+        echo \"hi\""
 
   "/home/toni/workspace/linkma/test_output/fstab":
       contents:

@@ -1,5 +1,5 @@
  files: 
-   - output_path: "./test_output/fstab"
+   - output_path: "/home/toni/workspace/linkma/test_output/fstab"
      contents: 
        InFileContents: "
         /dev/sda1 / btrfs defaults,noatime 0 1 

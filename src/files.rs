@@ -1,14 +1,14 @@
 use std::{
-    ascii::AsciiExt,
     cell::LazyCell,
     collections::{HashMap, HashSet},
-    fs::{File, create_dir_all, exists},
+    fs::{File, create_dir_all, exists, read_to_string, remove_file, soft_link},
     io::{Read, Write},
+    os::unix::fs::symlink,
     time::SystemTime,
 };
 
 use chrono::{DateTime, Utc};
-use sha2::{Digest, Sha256, Sha512};
+use sha2::{Digest, Sha256};
 
 use crate::config::{ConfigFile, CreateConfig};
 
@@ -86,6 +86,63 @@ fn link_files(mappings: HashMap<String, (String, String)>) -> Result<(), String>
     // If it exists move it to {path}.bak. If it doesn't exists create everything needed to put
     // the link where it needs to go (directories, if they don't exist). Link the files to their
     // output_path.
+
+    for (_output_name, (output_path, path)) in mappings.clone() {
+        // If the file exists move it to output_path.bak
+        if exists(output_path.clone())
+            .expect(format!("Couldn't check that file exists!\n{}", output_path).as_str())
+        {
+            // Read current contents and write it to output_path.bak
+            let mut old_file = File::open(output_path.clone())
+                .expect(format!("Couldn't open file for reading!\n{}", output_path).as_str());
+
+            if !old_file
+                .metadata()
+                .expect("Couldn't read file metadata")
+                .is_symlink()
+            {
+                let mut new_file = File::create(format!("{}.bak", output_path)).expect(
+                    format!(
+                        "Couldn't open file for backing up a file!\n{}.bak",
+                        output_path
+                    )
+                    .as_str(),
+                );
+                let mut old_file_contents = String::new();
+                File::read_to_string(&mut old_file, &mut old_file_contents).expect(
+                    format!(
+                        "Couldn't read contents from old file{}",
+                        output_path.clone(),
+                    )
+                    .as_str(),
+                );
+
+                new_file
+                    .write_all(old_file_contents.as_bytes())
+                    .expect("Couldn't write backup file");
+                remove_file(output_path.clone())
+                    .expect("Couldn't remove file which is to be replaced with a symlink");
+            } else {
+                remove_file(output_path.clone())
+                    .expect("Couldn't remove file which is to be replaced with a symlink");
+            }
+        }
+        // Now we can link the file
+        symlink(path, output_path).expect("Couldn't create symlink");
+    }
+
+    let mappings_as_json =
+        serde_json::to_string_pretty(&mappings).expect("Couldn't turn mapping to json.");
+
+    let mut mappings_file = File::create(format!(
+        "/linkma/{}/mappings.json",
+        TIMESTAMP.clone().format("%d_%m_%Y-%H_%M")
+    ))
+    .expect("Couldn't open mappings file");
+    mappings_file
+        .write_all(mappings_as_json.as_bytes())
+        .expect("Couldn't write json to mappings file");
+
     Ok(())
 }
 
@@ -120,7 +177,7 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
     }
 
     // Link the created files where they need to go
-    link_files(mappings);
+    link_files(mappings)?;
 
     // Backup the mapping between the path in /linkma and the output_path, so we can rollback.
     // backup_mappings

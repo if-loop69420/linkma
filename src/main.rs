@@ -21,6 +21,9 @@ fn main() {
         Commands::List | Commands::Ls => {
             list_generations();
         }
+        Commands::Clear { keep } => {}
+        Commands::Switch { switch_to } => {}
+        Commands::Delete { to_delete } => {}
         _ => todo!(),
     }
 }

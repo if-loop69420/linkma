@@ -17,11 +17,15 @@ pub enum Commands {
     },
     Switch {
         #[arg(short, long)]
-        switch_to: String,
+        switch_to: usize,
     },
     Clear {
         #[arg(short, long)]
-        leave_generations: usize,
+        keep: usize,
+    },
+    Delete {
+        #[arg(short, long)]
+        to_delete: usize,
     },
     List,
     Ls,

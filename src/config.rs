@@ -1,18 +1,18 @@
 use config::{Config, File};
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct CreateConfig {
     pub files: Vec<ConfigFile>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct ConfigFile {
     pub output_path: String,
     pub contents: Contents,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub enum Contents {
     InFileContents(String),
     OutOfFileContents(String),

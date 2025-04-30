@@ -1,7 +1,7 @@
 use std::{
     cell::LazyCell,
     collections::{HashMap, HashSet},
-    fs::{File, create_dir_all, exists, read_to_string, remove_file, soft_link},
+    fs::{File, create_dir_all, exists, remove_file, set_permissions},
     io::{Read, Write},
     os::unix::fs::symlink,
     time::SystemTime,
@@ -162,7 +162,7 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
             (file.output_path.clone(), path.clone()),
         );
         let contents = get_file_contents(file)?;
-        let mut out_file = match File::create(path) {
+        let mut out_file = match File::create(path.clone()) {
             Ok(x) => x,
             Err(e) => {
                 return Err(format!("Failed to create file with: {}", e));
@@ -174,13 +174,29 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
                 return Err(format!("{}", e));
             }
         }
+        let mut perms = out_file
+            .metadata()
+            .expect("Couldn't get permissions for file")
+            .permissions();
+
+        perms.set_readonly(true);
+        set_permissions(path, perms).expect("Couldn't set permissions to RO for files");
     }
 
     // Link the created files where they need to go
+    // Backup the mapping between the path in /linkma and the output_path, so we can rollback.
     link_files(mappings)?;
 
-    // Backup the mapping between the path in /linkma and the output_path, so we can rollback.
-    // backup_mappings
+    let directory_path = format!("/linkma/{}", TIMESTAMP.clone().format("%d_%m_%Y-%H_%M"));
+
+    let directory = File::open(directory_path.clone()).expect("Couldn't open directory");
+    let mut perms = directory
+        .metadata()
+        .expect("Couldn't open metadata for directory")
+        .permissions();
+    perms.set_readonly(true);
+
+    set_permissions(directory_path, perms).expect("Couldn't set permissions to RO for files");
 
     Ok(())
 }

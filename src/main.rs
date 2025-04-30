@@ -2,8 +2,6 @@ mod cli;
 mod config;
 mod files;
 
-use std::cell::LazyCell;
-
 use clap::Parser;
 use files::create_files;
 

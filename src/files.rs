@@ -1,7 +1,7 @@
 use std::{
     cell::LazyCell,
     collections::{HashMap, HashSet},
-    fs::{File, create_dir_all, exists, read_dir, remove_file, set_permissions},
+    fs::{File, create_dir_all, exists, read_dir, read_link, remove_file, set_permissions},
     io::{Read, Write},
     os::unix::fs::symlink,
     time::SystemTime,
@@ -98,11 +98,12 @@ fn link_files(mappings: HashMap<String, (String, String)>) -> Result<(), String>
             let mut old_file = File::open(output_path.clone())
                 .expect(format!("Couldn't open file for reading!\n{}", output_path).as_str());
 
-            if !old_file
-                .metadata()
-                .expect("Couldn't read file metadata")
-                .is_symlink()
-            {
+            if !read_link(output_path.clone()).is_ok() {
+                println!(
+                    "{} is not a symlink. It is a {:?}",
+                    output_path.clone(),
+                    old_file.metadata().expect("Couldn't open").file_type()
+                );
                 let mut new_file = File::create(format!("{}.bak", output_path)).expect(
                     format!(
                         "Couldn't open file for backing up a file!\n{}.bak",

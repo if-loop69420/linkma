@@ -21,9 +21,20 @@ fn main() {
         Commands::List | Commands::Ls => {
             list_generations();
         }
-        Commands::Clear { keep } => {}
-        Commands::Switch { switch_to } => {}
-        Commands::Delete { to_delete } => {}
-        _ => todo!(),
+        Commands::Clear {
+            keep,
+            skip,
+            switch_to_oldest,
+            switch_to_newest,
+        } => {
+            println!("Skipping {:?}", skip);
+            todo!()
+        }
+        Commands::Switch { switch_to } => {
+            todo!()
+        }
+        Commands::Delete { to_delete } => {
+            todo!()
+        }
     }
 }

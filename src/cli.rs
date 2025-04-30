@@ -22,6 +22,12 @@ pub enum Commands {
     Clear {
         #[arg(short, long)]
         keep: usize,
+        #[arg(short, long, value_delimiter = ',', group = "skip_logic")]
+        skip: Vec<usize>,
+        #[arg(short, long, group = "skip_logic")]
+        switch_to_oldest: bool,
+        #[arg(short, long, group = "skip_logic")]
+        switch_to_newest: bool,
     },
     Delete {
         #[arg(short, long)]

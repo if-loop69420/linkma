@@ -23,4 +23,6 @@ pub enum Commands {
         #[arg(short, long)]
         leave_generations: usize,
     },
+    List,
+    Ls,
 }

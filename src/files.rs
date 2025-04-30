@@ -1,18 +1,23 @@
 use std::{
     cell::LazyCell,
     collections::{HashMap, HashSet},
-    fs::{File, create_dir_all, exists, remove_file, set_permissions},
+    fs::{File, create_dir_all, exists, read_dir, remove_file, set_permissions},
     io::{Read, Write},
     os::unix::fs::symlink,
     time::SystemTime,
 };
 
 use chrono::{DateTime, Utc};
+use regex::Regex;
 use sha2::{Digest, Sha256};
 
 use crate::config::{ConfigFile, CreateConfig};
 
 pub const TIMESTAMP: LazyCell<DateTime<Utc>> = LazyCell::new(|| SystemTime::now().into());
+
+pub const DIRECTORY_REGEX: LazyCell<Regex> = LazyCell::new(|| {
+    Regex::new(r"\d+_\d+_\d+-\d+_\d+").expect("Couldn't create regex for dir name")
+});
 
 pub fn create_directory_if_not_exists() -> Result<(), String> {
     let timestamp_string = format!("{}", TIMESTAMP.clone().format("%d_%m_%Y-%H_%M"));
@@ -200,4 +205,26 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
     symlink(directory_path, "/linkma/current_system").expect("Couldn't link new current_system");
 
     Ok(())
+}
+
+pub fn list_generations() {
+    let directory_path = String::from("/linkma/");
+    let directories = read_dir(directory_path).expect("Couldn't read contents of /linkma");
+    let generations: Vec<String> = directories
+        .map(|x| {
+            x.expect("Couldn't unwrap content")
+                .file_name()
+                .into_string()
+                .expect("Couldn't convert to string")
+        })
+        .filter(|x| DIRECTORY_REGEX.is_match(x))
+        .collect();
+
+    println!("A list of the generations (newest first)");
+
+    generations
+        .iter()
+        .rev()
+        .enumerate()
+        .for_each(|(i, x)| println!("[{}] {}", i, x));
 }

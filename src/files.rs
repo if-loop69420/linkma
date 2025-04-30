@@ -8,14 +8,14 @@ use std::{
 };
 
 use chrono::{DateTime, Utc};
-use sha2::{Digest, Sha512};
+use sha2::{Digest, Sha256, Sha512};
 
 use crate::config::{ConfigFile, CreateConfig};
 
 pub const TIMESTAMP: LazyCell<DateTime<Utc>> = LazyCell::new(|| SystemTime::now().into());
 
 pub fn create_directory_if_not_exists() -> Result<(), String> {
-    let timestamp_string = format!("{}", TIMESTAMP.clone().to_rfc3339());
+    let timestamp_string = format!("{}", TIMESTAMP.clone().format("%d_%m_%Y-%H_%M"));
     let path = format!("/linkma/{}", timestamp_string);
     let exists = match exists(path.clone()) {
         Ok(x) => x,
@@ -85,16 +85,16 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
     create_dir(config.clone())?;
 
     for file in config.files {
-        let mut hasher = Sha512::new();
+        let mut hasher = Sha256::new();
         hasher.update(file.output_path.clone());
         let output_name = format!("{:X}", hasher.finalize());
-        let timestamp_string = format!("{}", TIMESTAMP.clone().to_rfc3339());
+        let timestamp_string = format!("{}", TIMESTAMP.clone().format("%d_%m_%Y-%H_%M"));
         let path = format!("/linkma/{}/{}.balls", timestamp_string, output_name);
         let contents = get_file_contents(file)?;
-        let mut out_file = match File::create_new(path) {
+        let mut out_file = match File::create(path) {
             Ok(x) => x,
             Err(e) => {
-                return Err(format!("Failed to create file with:\n{}", e));
+                return Err(format!("Failed to create file with: {}", e));
             }
         };
         match out_file.write_all(contents.as_bytes()) {

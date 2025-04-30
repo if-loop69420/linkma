@@ -120,12 +120,9 @@ fn link_files(mappings: HashMap<String, (String, String)>) -> Result<(), String>
                 new_file
                     .write_all(old_file_contents.as_bytes())
                     .expect("Couldn't write backup file");
-                remove_file(output_path.clone())
-                    .expect("Couldn't remove file which is to be replaced with a symlink");
-            } else {
-                remove_file(output_path.clone())
-                    .expect("Couldn't remove file which is to be replaced with a symlink");
             }
+            remove_file(output_path.clone())
+                .expect("Couldn't remove file which is to be replaced with a symlink");
         }
         // Now we can link the file
         symlink(path, output_path).expect("Couldn't create symlink");
@@ -196,7 +193,11 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
         .permissions();
     perms.set_readonly(true);
 
-    set_permissions(directory_path, perms).expect("Couldn't set permissions to RO for files");
+    set_permissions(directory_path.clone(), perms)
+        .expect("Couldn't set permissions to RO for files");
+
+    let _ = remove_file("/linkma/current_system");
+    symlink(directory_path, "/linkma/current_system").expect("Couldn't link new current_system");
 
     Ok(())
 }

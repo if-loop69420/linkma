@@ -11,7 +11,7 @@ Linkma config files, admin!
 - [X] Make a new folder in the output_path with the current timestamp
 - [X] Output all files, that need to go there with an identifier so we know where to link them (UUID or something)
 - [X] Once all files have been written add an init script to the folder, that links all the files (with their identifiers) to the correct paths
-- [ ] Set the folder to Read-only
-- [ ] Link the folder to something like /linkma/current_system
+- [X] Set the folder to Read-only
+- [X] Link the folder to something like /linkma/current_system
 - [ ] BIG: Figure out how to do rollbacks (e.g. if to do logging what folders are created and what files are moved to back etc, or just changing the links)
 - [ ] BIG: Add things for "generation" management (e.g. listing generations, deleting generations, auto deleting generations (keeping only the latest n generations))

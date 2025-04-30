@@ -81,8 +81,18 @@ fn get_file_contents(file: ConfigFile) -> Result<String, String> {
     }
 }
 
+fn link_files(mappings: HashMap<String, (String, String)>) -> Result<(), String> {
+    // Go through all mappings, check if a (non-symlink) file for the output path exists
+    // If it exists move it to {path}.bak. If it doesn't exists create everything needed to put
+    // the link where it needs to go (directories, if they don't exist). Link the files to their
+    // output_path.
+    Ok(())
+}
+
 pub fn create_files(config: CreateConfig) -> Result<(), String> {
     create_dir(config.clone())?;
+
+    let mut mappings = HashMap::new();
 
     for file in config.files {
         let mut hasher = Sha256::new();
@@ -90,6 +100,10 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
         let output_name = format!("{:X}", hasher.finalize());
         let timestamp_string = format!("{}", TIMESTAMP.clone().format("%d_%m_%Y-%H_%M"));
         let path = format!("/linkma/{}/{}.balls", timestamp_string, output_name);
+        mappings.insert(
+            output_name.clone(),
+            (file.output_path.clone(), path.clone()),
+        );
         let contents = get_file_contents(file)?;
         let mut out_file = match File::create(path) {
             Ok(x) => x,
@@ -104,6 +118,12 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
             }
         }
     }
+
+    // Link the created files where they need to go
+    link_files(mappings);
+
+    // Backup the mapping between the path in /linkma and the output_path, so we can rollback.
+    // backup_mappings
 
     Ok(())
 }

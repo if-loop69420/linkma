@@ -48,10 +48,7 @@ pub fn create_directory_if_not_exists() -> Result<(), String> {
 
 pub fn check_unique_filenames(config: CreateConfig) -> bool {
     let mut unique = HashSet::new();
-    config
-        .files
-        .iter()
-        .all(|x| unique.insert(x.output_path.clone()))
+    config.files.iter().all(|x| unique.insert(x.0.clone()))
 }
 
 pub fn create_dir(config: CreateConfig) -> Result<(), String> {
@@ -67,8 +64,8 @@ pub fn create_dir(config: CreateConfig) -> Result<(), String> {
 
 fn get_file_contents(file: ConfigFile) -> Result<String, String> {
     match file.contents {
-        crate::config::Contents::InFileContents(x) => Ok(x),
-        crate::config::Contents::OutOfFileContents(x) => {
+        crate::config::Contents::internal(x) => Ok(x),
+        crate::config::Contents::external(x) => {
             let mut file = match File::open(x) {
                 Ok(x) => x,
                 Err(e) => {
@@ -155,15 +152,12 @@ pub fn create_files(config: CreateConfig) -> Result<(), String> {
 
     for file in config.files {
         let mut hasher = Sha256::new();
-        hasher.update(file.output_path.clone());
+        hasher.update(file.0.clone());
         let output_name = format!("{:X}", hasher.finalize());
         let timestamp_string = format!("{}", TIMESTAMP.clone().format("%d_%m_%Y-%H_%M"));
         let path = format!("/linkma/{}/{}.balls", timestamp_string, output_name);
-        mappings.insert(
-            output_name.clone(),
-            (file.output_path.clone(), path.clone()),
-        );
-        let contents = get_file_contents(file)?;
+        mappings.insert(output_name.clone(), (file.0.clone(), path.clone()));
+        let contents = get_file_contents(file.1)?;
         let mut out_file = match File::create(path.clone()) {
             Ok(x) => x,
             Err(e) => {

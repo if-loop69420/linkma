@@ -1,6 +1,9 @@
  files: 
-   - output_path: "/home/toni/workspace/linkma/test_output/fstab"
-     contents: 
-       InFileContents: "
-        /dev/sda1 / btrfs defaults,noatime 0 1 
-        "
+  "/home/toni/workspace/linkma/test_output/.bashrc":
+    contents:
+      internal: "
+        echo \"hi\"        "
+
+  "/home/toni/workspace/linkma/test_output/fstab":
+      contents:
+        external: ./example/fstab

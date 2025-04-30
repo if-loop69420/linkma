@@ -1,21 +1,22 @@
+use std::collections::HashMap;
+
 use config::{Config, File};
 use serde::Deserialize;
 
 #[derive(Deserialize, Clone)]
 pub struct CreateConfig {
-    pub files: Vec<ConfigFile>,
+    pub files: HashMap<String, ConfigFile>,
 }
 
 #[derive(Deserialize, Clone)]
 pub struct ConfigFile {
-    pub output_path: String,
     pub contents: Contents,
 }
 
 #[derive(Deserialize, Clone)]
 pub enum Contents {
-    InFileContents(String),
-    OutOfFileContents(String),
+    internal(String),
+    external(String),
 }
 
 impl From<String> for CreateConfig {

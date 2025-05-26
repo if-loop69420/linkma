@@ -1,10 +1,12 @@
 #![allow(non_camel_case_types)]
 mod cli;
 mod config;
+mod create;
 mod files;
 
 use clap::Parser;
 use files::create_files;
+use files::delete_nth_generation;
 use files::list_generations;
 
 use crate::cli::CliArgs;
@@ -34,7 +36,7 @@ fn main() {
             todo!()
         }
         Commands::Delete { to_delete } => {
-            todo!()
+            delete_nth_generation(to_delete);
         }
     }
 }

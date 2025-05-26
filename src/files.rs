@@ -1,7 +1,10 @@
 use std::{
     cell::LazyCell,
     collections::{HashMap, HashSet},
-    fs::{File, create_dir_all, exists, read_dir, read_link, remove_file, set_permissions},
+    fs::{
+        File, create_dir_all, exists, read_dir, read_link, remove_dir_all, remove_file,
+        set_permissions,
+    },
     io::{Read, Write},
     os::unix::fs::symlink,
     time::SystemTime,
@@ -222,4 +225,30 @@ pub fn list_generations() {
         .rev()
         .enumerate()
         .for_each(|(i, x)| println!("[{}] {}", i, x));
+}
+
+pub fn delete_nth_generation(n: usize) {
+    let directory_path = String::from("/linkma/");
+    let directories = read_dir(directory_path).expect("Couldn't read contents of /linkma");
+    let generations: Vec<String> = directories
+        .map(|x| {
+            x.expect("Couldn't unwrap content")
+                .file_name()
+                .into_string()
+                .expect("Couldn't convert to string")
+        })
+        .filter(|x| DIRECTORY_REGEX.is_match(x))
+        .collect();
+
+    println!("A list of the generations (newest first)");
+
+    generations
+        .iter()
+        .rev()
+        .enumerate()
+        .filter(|(i, _)| *i == n)
+        .map(|(_, x)| x)
+        .for_each(|x| {
+            remove_dir_all(format!("/linkma/{}", x)).expect("Couldn't remove the file");
+        });
 }

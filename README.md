@@ -15,6 +15,6 @@ Linkma config files, admin!
 - [X] Link the folder to something like /linkma/current_system
 - [X] Linking of generations
 - [ ] Do generations management (clear all but the latest "n")
-- [ ] Deletion of a specific generation
+- [X] Deletion of a specific generation
 - [ ] Switch to a specific generation
   
